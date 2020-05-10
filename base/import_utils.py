@@ -66,6 +66,26 @@ def import_module_and_submodules(package_name: str) -> None:
 
 PathType = Union[os.PathLike, str]
 
+
+@contextmanager
+def pushd(new_dir: PathType, verbose: bool = False) -> ContextManagerFunctionReturnType[None]:
+    """
+    Changes the current directory to the given path and prepends it to `sys.path`.
+    This method is intended to use with `with`, so after its usage, the current directory will be
+    set to the previous value.
+    """
+    previous_dir = os.getcwd()
+    if verbose:
+        logger.info(f"Changing directory to {new_dir}")  # type: ignore
+    os.chdir(new_dir)
+    try:
+        yield
+    finally:
+        if verbose:
+            logger.info(f"Changing directory back to {previous_dir}")
+        os.chdir(previous_dir)
+        
+
 @contextmanager
 def pushd(new_dir: PathType, verbose: bool = False) -> ContextManagerFunctionReturnType[None]:
     """
